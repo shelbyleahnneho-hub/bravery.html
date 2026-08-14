@@ -1,166 +1,2558 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bravery Student Hub</title>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
+
 <style>
-/* --- full original CSS preserved (trimmed/reordered slightly) --- */
-*{box-sizing:border-box;margin:0;padding:0;font-family:"Trebuchet MS", Arial, sans-serif}
-body{min-height:100vh;color:#252052;overflow-x:hidden;background:radial-gradient(circle at 10% 10%, #cbb7ff 0%, transparent 28%),radial-gradient(circle at 90% 20%, #ffd2e5 0%, transparent 30%),radial-gradient(circle at 50% 100%, #b9e8ff 0%, transparent 35%),linear-gradient(135deg,#fff5fc,#eef5ff,#fff8e9);position:relative}
-.decor{position:fixed;pointer-events:none;z-index:-1;animation:float 7s ease-in-out infinite}
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:"Trebuchet MS",Arial,sans-serif;
+}
+
+body{
+    min-height:100vh;
+    color:#252052;
+    overflow-x:hidden;
+    background:
+        radial-gradient(circle at 10% 10%,#cbb7ff 0%,transparent 28%),
+        radial-gradient(circle at 90% 20%,#ffd2e5 0%,transparent 30%),
+        radial-gradient(circle at 50% 100%,#b9e8ff 0%,transparent 35%),
+        linear-gradient(135deg,#fff5fc,#eef5ff,#fff8e9);
+}
+
+.decor{
+    position:fixed;
+    pointer-events:none;
+    z-index:-1;
+    animation:float 7s ease-in-out infinite;
+}
+
 .star1{top:12%;left:4%;font-size:30px}
-.star2{top:40%;right:5%;font-size:25px;animation-delay:2s}
-.star3{bottom:10%;left:8%;font-size:24px;animation-delay:4s}
+.star2{top:40%;right:5%;font-size:25px}
+.star3{bottom:10%;left:8%;font-size:24px}
 .cloud1{top:4%;right:20%;font-size:55px;opacity:.5}
-.cloud2{bottom:4%;right:10%;font-size:50px;opacity:.4;animation-delay:3s}
-@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
-header{max-width:1250px;margin:25px auto 15px;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;border-radius:28px;background:rgba(255,255,255,.75);backdrop-filter:blur(18px);box-shadow:0 15px 40px rgba(89,65,160,.15);border:2px solid rgba(255,255,255,.8)}
-.logo{font-size:29px;font-weight:900;color:#302568}
+.cloud2{bottom:4%;right:10%;font-size:50px;opacity:.4}
+
+@keyframes float{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-15px)}
+}
+
+header{
+    max-width:1250px;
+    margin:25px auto 15px;
+    padding:22px 28px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-radius:28px;
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(18px);
+    box-shadow:0 15px 40px rgba(89,65,160,.15);
+    border:2px solid rgba(255,255,255,.8);
+}
+
+.logo{
+    font-size:29px;
+    font-weight:900;
+    color:#302568;
+}
+
 .logo span{color:#7652d6}
-.bravecuties{font-size:12px;font-weight:bold;letter-spacing:2px;color:#b45be4;margin-top:4px;margin-left:42px;text-shadow:0 2px 8px rgba(180,91,228,.2)}
-.tagline{color:#8b78b8;font-size:13px;margin-top:5px}
-.clock{text-align:right}#time{font-size:25px;font-weight:bold;color:#4e389e}#date{font-size:13px;color:#81759d;margin-top:3px}
-nav{max-width:1250px;margin:15px auto;display:flex;gap:10px;flex-wrap:wrap}
-nav button{border:none;padding:12px 18px;border-radius:15px;background:rgba(255,255,255,.8);color:#393064;font-weight:bold;cursor:pointer;transition:.25s;box-shadow:0 5px 15px rgba(90,60,150,.08)}
-nav button:hover{transform:translateY(-3px);background:#8b5de8;color:white}
-nav button.active{background:linear-gradient(135deg,#7651d6,#b05ee8);color:white;box-shadow:0 8px 20px rgba(118,81,214,.3)}
-.page{display:none;max-width:1250px;margin:20px auto 50px}
+
+.bravecuties{
+    font-size:12px;
+    font-weight:bold;
+    letter-spacing:2px;
+    color:#b45be4;
+    margin-top:4px;
+    margin-left:42px;
+}
+
+.tagline{
+    color:#8b78b8;
+    font-size:13px;
+    margin-top:5px;
+}
+
+.clock{text-align:right}
+
+#time{
+    font-size:25px;
+    font-weight:bold;
+    color:#4e389e;
+}
+
+#date{
+    font-size:13px;
+    color:#81759d;
+    margin-top:3px;
+}
+
+.firebase-status{
+    max-width:1250px;
+    margin:5px auto;
+    text-align:center;
+    font-size:12px;
+    font-weight:bold;
+}
+
+.firebase-ok{color:#3c9a58}
+.firebase-error{color:#d34f6f}
+
+nav{
+    max-width:1250px;
+    margin:15px auto;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+nav button{
+    border:none;
+    padding:12px 18px;
+    border-radius:15px;
+    background:rgba(255,255,255,.8);
+    color:#393064;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.25s;
+}
+
+nav button:hover{
+    transform:translateY(-3px);
+    background:#8b5de8;
+    color:white;
+}
+
+nav button.active{
+    background:linear-gradient(135deg,#7651d6,#b05ee8);
+    color:white;
+}
+
+.page{
+    display:none;
+    max-width:1250px;
+    margin:20px auto 50px;
+}
+
 .page.active{display:block}
-.welcome{margin:30px 5px}
-.welcome h1{font-size:42px;color:#302565}
-.welcome p{margin-top:7px;color:#81759d}
-.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
-.card{background:rgba(255,255,255,.82);backdrop-filter:blur(15px);border-radius:25px;padding:23px;border:2px solid rgba(255,255,255,.9);box-shadow:0 12px 30px rgba(90,60,150,.10);transition:.25s}
-.card:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(90,60,150,.15)}
-.card h2{margin-bottom:15px;color:#3c2b76}
-/* photo gallery */
-.photo-intro{text-align:center;margin-bottom:25px}
-.photo-intro h2{color:#51359a;margin-bottom:8px}
-.photo-intro p{color:#81759d}
-.photo-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
-.photo-card{background:white;padding:12px;border-radius:22px;box-shadow:0 10px 25px rgba(80,60,130,.12);transition:.25s}
-.photo-card:hover{transform:translateY(-5px) rotate(1deg);box-shadow:0 16px 35px rgba(80,60,130,.18)}
-.photo-card img{width:100%;height:250px;object-fit:cover;border-radius:16px;display:block}
-.photo-caption{text-align:center;padding:12px 5px 5px;color:#5b4a87;font-weight:bold}
-footer{text-align:center;padding:25px;color:#80759b;font-size:13px}
-@media(max-width:800px){body{padding:10px}header{flex-direction:column;gap:15px;text-align:center}.clock{text-align:center}.grid{grid-template-columns:1fr}.welcome h1{font-size:32px}.form-row{grid-template-columns:1fr}.schedule{font-size:12px}.schedule th,.schedule td{padding:9px 5px}.add-task-box{flex-direction:column}.cutie-intro{align-items:flex-start}.note-bottom{flex-direction:column;align-items:stretch}.post-note{width:100%}.bravecuties{margin-left:0;letter-spacing:1.5px}}
+
+.welcome{
+    margin:30px 5px;
+}
+
+.welcome h1{
+    font-size:42px;
+    color:#302565;
+}
+
+.welcome p{
+    margin-top:7px;
+    color:#81759d;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:20px;
+}
+
+.card{
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(15px);
+    border-radius:25px;
+    padding:23px;
+    border:2px solid rgba(255,255,255,.9);
+    box-shadow:0 12px 30px rgba(90,60,150,.1);
+    margin-bottom:20px;
+}
+
+.card h2{
+    margin-bottom:15px;
+    color:#3c2b76;
+}
+
+.next{
+    background:linear-gradient(
+        135deg,
+        rgba(110,79,220,.95),
+        rgba(180,86,225,.92)
+    );
+    color:white;
+}
+
+.next h2{color:white}
+
+.nextSubject{
+    font-size:30px;
+    font-weight:bold;
+}
+
+.next .muted{color:#eee5ff}
+
+#countdown{
+    display:inline-block;
+    margin-top:15px;
+    padding:9px 14px;
+    border-radius:20px;
+    background:rgba(255,255,255,.2);
+}
+
+.schedule{
+    width:100%;
+    border-collapse:separate;
+    border-spacing:0 7px;
+}
+
+.schedule th{
+    padding:12px;
+    color:#735ca6;
+    text-align:left;
+}
+
+.schedule td{
+    padding:14px 12px;
+    background:#f7f3ff;
+}
+
+.schedule tr td:first-child{
+    border-radius:12px 0 0 12px;
+}
+
+.schedule tr td:last-child{
+    border-radius:0 12px 12px 0;
+}
+
+.schedule tr.current td{
+    background:#d7f6dc;
+    font-weight:bold;
+    color:#205c35;
+}
+
+.schedule tr.break td{
+    background:#fff0c7;
+    color:#966b18;
+    font-weight:bold;
+}
+
+.muted{color:#817b92}
+
+.todo-header{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:18px;
+}
+
+.progress-text{
+    color:#7d6da3;
+    font-weight:bold;
+}
+
+.progress-bar{
+    height:10px;
+    background:#eee8fa;
+    border-radius:20px;
+    overflow:hidden;
+    margin-bottom:18px;
+}
+
+.progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,#7651d6,#c35ee5);
+    transition:.4s;
+}
+
+.task{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:14px;
+    margin:9px 0;
+    border-radius:15px;
+    background:#f7f4ff;
+}
+
+.task.completed{
+    opacity:.6;
+    background:#edf9f0;
+}
+
+.task.completed .task-text{
+    text-decoration:line-through;
+}
+
+.task-check{
+    width:20px;
+    height:20px;
+    accent-color:#7651d6;
+}
+
+.task-text{
+    flex:1;
+    word-break:break-word;
+}
+
+.task-actions{
+    display:flex;
+    gap:6px;
+}
+
+.task-actions button{
+    border:none;
+    width:32px;
+    height:32px;
+    border-radius:9px;
+    cursor:pointer;
+}
+
+.edit-task{
+    background:#e9e0ff;
+}
+
+.delete-task{
+    background:#ffe1e9;
+}
+
+.add-task-box{
+    display:flex;
+    gap:10px;
+    margin-top:18px;
+}
+
+.add-task-box input{
+    flex:1;
+    padding:13px;
+    border-radius:13px;
+    border:2px solid #ddd3f5;
+    outline:none;
+}
+
+.add-task-btn,
+.post-btn,
+.post-note{
+    border:none;
+    padding:12px 18px;
+    border-radius:13px;
+    background:linear-gradient(135deg,#7350d5,#b05be4);
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.todo-buttons{
+    display:flex;
+    gap:9px;
+    flex-wrap:wrap;
+    margin-top:15px;
+}
+
+.todo-small-btn{
+    border:none;
+    padding:9px 13px;
+    border-radius:11px;
+    cursor:pointer;
+    font-weight:bold;
+    color:#55458a;
+    background:#eee8fa;
+}
+
+.subject{
+    padding:17px;
+    margin-bottom:12px;
+    border-radius:16px;
+    background:linear-gradient(135deg,#f5f0ff,#edf7ff);
+}
+
+.subject strong{
+    color:#6745bc;
+    font-size:17px;
+}
+
+.subject p{margin-top:5px}
+
+.reminder{
+    padding:18px;
+    margin:12px 0;
+    border-radius:18px;
+    border-left:6px solid;
+}
+
+.reminder p{
+    margin-top:8px;
+    line-height:1.5;
+}
+
+.info{
+    background:#eaf3ff;
+    border-color:#5c94ed;
+}
+
+.warning{
+    background:#fff5d8;
+    border-color:#f0b933;
+}
+
+.urgent{
+    background:#ffe9f0;
+    border-color:#ed6b91;
+}
+
+.success{
+    background:#e7faec;
+    border-color:#55b976;
+}
+
+.pio-panel{
+    margin-top:25px;
+    background:linear-gradient(135deg,#f1e9ff,#fff0fa,#edf8ff);
+    border:2px solid #cbb8f5;
+    border-radius:25px;
+    padding:25px;
+}
+
+.form-row{
+    display:grid;
+    grid-template-columns:200px 1fr;
+    gap:12px;
+    margin-bottom:12px;
+}
+
+select,
+textarea,
+input[type="text"]{
+    width:100%;
+    padding:13px;
+    border-radius:13px;
+    border:2px solid #ddd3f5;
+    background:white;
+    color:#34275d;
+    outline:none;
+}
+
+textarea{
+    min-height:100px;
+    resize:vertical;
+}
+
+.pio-buttons{
+    display:flex;
+    gap:10px;
+    margin-top:10px;
+}
+
+.clear-btn,
+.clear-notes{
+    border:none;
+    padding:12px 20px;
+    border-radius:13px;
+    cursor:pointer;
+    font-weight:bold;
+    background:#e76d87;
+    color:white;
+}
+
+.bring-item{
+    padding:15px;
+    margin:8px 0;
+    border-radius:14px;
+    background:#f6f3ff;
+}
+
+.bring-item input{
+    margin-right:10px;
+}
+
+.cutie-intro{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    margin-bottom:20px;
+}
+
+.cutie-icon{
+    width:65px;
+    height:65px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:20px;
+    font-size:32px;
+    background:linear-gradient(135deg,#ffe1ef,#e7dcff);
+}
+
+.note-box{
+    background:#faf8ff;
+    border:2px solid #e4daf8;
+    padding:15px;
+    border-radius:18px;
+}
+
+.note-box textarea{
+    min-height:85px;
+}
+
+.note-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:10px;
+    gap:10px;
+}
+
+#charCount{
+    color:#9388a8;
+    font-size:12px;
+}
+
+.quick-notes{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    flex-wrap:wrap;
+    margin-top:13px;
+}
+
+.quick-notes button{
+    border:none;
+    padding:7px 10px;
+    border-radius:10px;
+    background:#eee8fa;
+    color:#594789;
+    cursor:pointer;
+}
+
+.notes-wall{
+    margin-top:22px;
+    background:rgba(255,255,255,.55);
+    padding:20px;
+    border-radius:25px;
+}
+
+.notes-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.notes-title h2{
+    color:#3c2b76;
+}
+
+.clear-notes{
+    background:#ffe2ea;
+    color:#b64e6d;
+    padding:8px 12px;
+}
+
+.cutie-notes-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+    gap:15px;
+}
+
+.cutie-note{
+    min-height:130px;
+    padding:18px;
+    border-radius:8px 18px 18px 18px;
+    position:relative;
+    box-shadow:0 8px 18px rgba(80,60,120,.1);
+    transform:rotate(var(--rotation));
+}
+
+.cutie-note p{
+    color:#42375c;
+    line-height:1.5;
+    word-break:break-word;
+}
+
+.note-delete{
+    position:absolute;
+    bottom:8px;
+    right:10px;
+    border:none;
+    background:transparent;
+    cursor:pointer;
+}
+
+.note-time{
+    margin-top:12px;
+    font-size:10px;
+    color:#8b809e;
+}
+
+footer{
+    text-align:center;
+    padding:25px;
+    color:#80759b;
+}
+
+@media(max-width:800px){
+    body{padding:10px}
+    header{
+        flex-direction:column;
+        gap:15px;
+        text-align:center;
+    }
+    .clock{text-align:center}
+    .grid{grid-template-columns:1fr}
+    .welcome h1{font-size:32px}
+    .form-row{grid-template-columns:1fr}
+    .add-task-box{flex-direction:column}
+    .bravecuties{
+        margin-left:0;
+        letter-spacing:1.5px;
+    }
+    .note-bottom{
+        flex-direction:column;
+        align-items:stretch;
+    }
+    .post-note{width:100%}
+}
 </style>
 </head>
+
 <body>
 
 <div class="decor star1">✦</div>
-<div class="decor star2">✦</div>
+<div class="decor star2">✧</div>
 <div class="decor star3">✦</div>
+<div class="decor cloud1">☁️</div>
+<div class="decor cloud2">☁️</div>
 
 <header>
-  <div style="display:flex;align-items:center">
-    <div class="logo">BRAVERY <span>Hub</span></div>
-    <div class="bravecuties">BRAVERY STUDENTS</div>
-  </div>
-  <div class="clock">
-    <div id="time">--:--</div>
-    <div id="date">Loading date...</div>
-  </div>
+
+<div>
+
+<div class="logo">
+🏫 <span>BRAVERY</span> STUDENT HUB
+
+<div class="bravecuties">
+BRAVERY STUDENTS CUTIES
+</div>
+
+</div>
+
+<div class="tagline">
+Together, we can. ♡
+</div>
+
+</div>
+
+<div class="clock">
+
+<div id="time">
+00:00:00
+</div>
+
+<div id="date">
+Loading...
+</div>
+
+</div>
+
 </header>
 
+<div id="firebaseStatus" class="firebase-status">
+Connecting to Firebase...
+</div>
+
 <nav>
-  <button class="active" onclick="showPage('home',this)">Home</button>
-  <button onclick="showPage('schedule',this)">Schedule</button>
-  <button onclick="showPage('tasks',this)">Tasks</button>
-  <button onclick="showPage('photos',this)">Photos</button>
+
+<button class="active" onclick="showPage('home',this)">
+🏠 Home
+</button>
+
+<button onclick="showPage('schedule',this)">
+📅 Schedule
+</button>
+
+<button onclick="showPage('tasks',this)">
+✅ To-Do
+</button>
+
+<button onclick="showPage('review',this)">
+📚 Review
+</button>
+
+<button onclick="showPage('reminders',this)">
+📢 Reminders
+</button>
+
+<button onclick="showPage('bring',this)">
+🎒 Bring
+</button>
+
+<button onclick="showPage('cuties',this)">
+💌 BraveryCuties
+</button>
+
 </nav>
 
+
 <!-- HOME -->
+
 <section id="home" class="page active">
-  <div class="welcome">
-    <h1>Welcome to Bravery Student Hub</h1>
-    <p>Your class schedule, tasks and memories in one place.</p>
-  </div>
-  <div class="grid">
-    <div class="card next">
-      <h2>Next Class</h2>
-      <div class="nextSubject">Math — Algebra</div>
-      <div class="muted">Room 12 • Teacher: Ms. D</div>
-    </div>
-    <div class="card">
-      <h2>Quick Links</h2>
-      <p class="muted">View schedule, add tasks, and share photos.</p>
-    </div>
-  </div>
+
+<div class="welcome">
+
+<h1>
+Good day, Bravery! 💜
+</h1>
+
+<p>
+Your class schedule, tasks, reminders and study guide — all in one place.
+</p>
+
+</div>
+
+<div class="grid">
+
+<div class="card next">
+
+<h2>
+⏭️ Next Class
+</h2>
+
+<div class="nextSubject" id="nextSubject">
+Loading...
+</div>
+
+<div class="muted" id="nextTeacher">
+—
+</div>
+
+<div class="muted" id="nextRoom">
+—
+</div>
+
+<div id="countdown">
+—
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+📌 Class Goals
+</h2>
+
+<div>☑️ Complete all requirements</div>
+<div>☑️ Improve our class performance</div>
+<div>☑️ No missing activities</div>
+<div>☑️ Everyone participates</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+📅 Today's Schedule
+</h2>
+
+<p class="muted">
+Check your classes and rooms.
+</p>
+
+<br>
+
+<button
+onclick="showPage('schedule',document.querySelectorAll('nav button')[1])"
+class="add-task-btn">
+
+View Schedule →
+
+</button>
+
+</div>
+
+
+<div class="card">
+
+<h2>
+📢 Latest P.I.O. Reminder
+</h2>
+
+<div id="homeReminder">
+Loading reminders...
+</div>
+
+</div>
+
+</div>
+
 </section>
+
 
 <!-- SCHEDULE -->
+
 <section id="schedule" class="page">
-  <div class="card">
-    <h2>Class Schedule</h2>
-    <table class="schedule">
-      <thead><tr><th>Time</th><th>Subject</th><th>Room</th></tr></thead>
-      <tbody>
-        <tr class="current"><td>09:00 - 10:00</td><td>Math</td><td>12</td></tr>
-        <tr><td>10:15 - 11:00</td><td>Science</td><td>30</td></tr>
-        <tr><td>11:15 - 12:00</td><td>English</td><td>41</td></tr>
-      </tbody>
-    </table>
-  </div>
+
+<div class="welcome">
+
+<h1>
+📅 Bravery Schedule
+</h1>
+
+<p>
+Our daily class schedule.
+</p>
+
+</div>
+
+<div class="card">
+
+<table class="schedule">
+
+<thead>
+
+<tr>
+<th>Time</th>
+<th>Subject</th>
+<th>Teacher</th>
+<th>Room</th>
+</tr>
+
+</thead>
+
+<tbody id="scheduleBody">
+
+<tr data-start="12:40" data-end="13:25">
+<td>12:40 – 1:25</td>
+<td>MAPEH</td>
+<td>F. Danganan</td>
+<td>412 DB</td>
+</tr>
+
+<tr data-start="13:25" data-end="14:10">
+<td>1:25 – 2:10</td>
+<td>Filipino</td>
+<td>P. Florendo</td>
+<td>NB 308</td>
+</tr>
+
+<tr data-start="14:10" data-end="14:55">
+<td>2:10 – 2:55</td>
+<td>AP</td>
+<td>A. Wenceslao</td>
+<td>NB 808</td>
+</tr>
+
+<tr data-start="14:55" data-end="15:40">
+<td>2:55 – 3:40</td>
+<td>Science</td>
+<td>A. Bariwan</td>
+<td>—</td>
+</tr>
+
+<tr class="break" data-start="15:40" data-end="16:00">
+<td>3:40 – 4:00</td>
+<td>☕ BREAK</td>
+<td>—</td>
+<td>—</td>
+</tr>
+
+<tr data-start="16:00" data-end="16:45">
+<td>4:00 – 4:45</td>
+<td>TLE</td>
+<td>L. Ricablanca</td>
+<td>SB 113</td>
+</tr>
+
+<tr data-start="16:45" data-end="17:30">
+<td>4:45 – 5:30</td>
+<td>Mathematics</td>
+<td>R. Narca</td>
+<td>—</td>
+</tr>
+
+<tr data-start="17:30" data-end="18:15">
+<td>5:30 – 6:15</td>
+<td>ESP</td>
+<td>E. Tagura</td>
+<td>—</td>
+</tr>
+
+<tr data-start="18:15" data-end="19:00">
+<td>6:15 – 7:00</td>
+<td>English</td>
+<td>A. Umpad</td>
+<td>SB 418</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
 </section>
 
-<!-- TASKS -->
+
+<!-- TODO -->
+
 <section id="tasks" class="page">
-  <div class="card">
-    <h2>To-do List</h2>
-    <div class="todo-header">
-      <div class="progress-text">3 tasks — 1 done</div>
-    </div>
-    <div class="task">
-      <input class="task-check" type="checkbox">
-      <div class="task-text">Finish math worksheet</div>
-    </div>
-    <div class="task">
-      <input class="task-check" type="checkbox">
-      <div class="task-text">Prepare science project</div>
-    </div>
-    <div class="add-task-box">
-      <input id="newTask" placeholder="Add a new task...">
-      <button class="add-task-btn" onclick="addTask()">Add</button>
-    </div>
-  </div>
+
+<div class="welcome">
+
+<h1>
+✅ Bravery To-Do List
+</h1>
+
+<p>
+Keep track of everything the class needs to finish.
+</p>
+
+</div>
+
+<div class="card">
+
+<div class="todo-header">
+
+<h2>
+📋 Class Tasks
+</h2>
+
+<div id="progressText">
+0 / 0 completed
+</div>
+
+</div>
+
+<div class="progress-bar">
+
+<div
+class="progress-fill"
+id="progressFill">
+</div>
+
+</div>
+
+<div id="taskList"></div>
+
+<div class="add-task-box">
+
+<input
+id="taskInput"
+placeholder="Add a new class task..."
+onkeydown="handleTaskEnter(event)">
+
+<button
+class="add-task-btn"
+onclick="addTask()">
+
+➕ ADD TASK
+
+</button>
+
+</div>
+
+<div class="todo-buttons">
+
+<button
+class="todo-small-btn"
+onclick="clearCompleted()">
+
+🧹 Clear Completed
+
+</button>
+
+<button
+class="todo-small-btn"
+onclick="clearAllTasks()">
+
+🗑️ Clear All Tasks
+
+</button>
+
+</div>
+
+</div>
+
+<div class="card">
+
+<h2>
+💡 Quick Add
+</h2>
+
+<div class="todo-buttons">
+
+<button class="todo-small-btn"
+onclick="quickAdd('Review for the upcoming quiz')">
+📚 Review
+</button>
+
+<button class="todo-small-btn"
+onclick="quickAdd('Finish PETA')">
+🎨 PETA
+</button>
+
+<button class="todo-small-btn"
+onclick="quickAdd('Submit requirements')">
+📄 Submission
+</button>
+
+<button class="todo-small-btn"
+onclick="quickAdd('Prepare materials')">
+🎒 Materials
+</button>
+
+</div>
+
+</div>
+
 </section>
 
-<!-- PHOTOS (PHOTO WALL) -->
-<section id="photos" class="page">
-  <div class="photo-intro">
-    <h2>Photo Wall</h2>
-    <p>Moments from class and events — share yours!</p>
-  </div>
-  <div class="photo-gallery">
-    <div class="photo-card">
-      <img src="classphoto.jpg" alt="Class Photo 1" loading="lazy">
-      <div class="photo-caption">Class Photo 1</div>
-    </div>
-    <div class="photo-card">
-      <img src="classphoto2.jpg" alt="Class Photo 2" loading="lazy">
-      <div class="photo-caption">Class Photo 2</div>
-    </div>
-    <div class="photo-card">
-      <img src="classphoto3.jpg" alt="Class Photo 3" loading="lazy">
-      <div class="photo-caption">Class Photo 3</div>
-    </div>
-  </div>
+
+<!-- REVIEW -->
+
+<section id="review" class="page">
+
+<div class="welcome">
+
+<h1>
+📚 Things to Review
+</h1>
+
+<p>
+Keep your lessons fresh!
+</p>
+
+</div>
+
+<div class="card">
+
+<div class="subject">
+<strong>🔬 SCIENCE</strong>
+<p>Electromagnetic Waves</p>
+<p class="muted">
+Radio Waves • Microwaves • Infrared • Visible Light • UV • X-rays • Gamma Rays
+</p>
+</div>
+
+<div class="subject">
+<strong>📐 MATHEMATICS</strong>
+<p>Add your current Math topic here.</p>
+</div>
+
+<div class="subject">
+<strong>📖 FILIPINO</strong>
+<p>Add your current Filipino topic here.</p>
+</div>
+
+<div class="subject">
+<strong>🌏 AP</strong>
+<p>Add your current AP topic here.</p>
+</div>
+
+<div class="subject">
+<strong>💻 TLE</strong>
+<p>Add your current TLE topic here.</p>
+</div>
+
+</div>
+
 </section>
+
+
+<!-- REMINDERS -->
+
+<section id="reminders" class="page">
+
+<div class="welcome">
+
+<h1>
+📢 P.I.O. Reminders
+</h1>
+
+<p>
+Latest announcements for Bravery.
+</p>
+
+</div>
+
+<div class="card">
+
+<div id="reminderList">
+Loading reminders...
+</div>
+
+</div>
+
+
+<div class="pio-panel">
+
+<h2>
+📣 P.I.O. Update Panel
+</h2>
+
+<p>
+Add a reminder for the class.
+</p>
+
+<div class="form-row">
+
+<select id="reminderType">
+
+<option value="info">
+🔵 Announcement
+</option>
+
+<option value="warning">
+🟡 Reminder
+</option>
+
+<option value="urgent">
+🔴 Urgent
+</option>
+
+<option value="success">
+🟢 Good News
+</option>
+
+</select>
+
+<input
+id="reminderTitle"
+type="text"
+placeholder="Reminder title">
+
+</div>
+
+<textarea
+id="reminderMessage"
+placeholder="Type the reminder here...">
+</textarea>
+
+<div class="pio-buttons">
+
+<button
+class="post-btn"
+onclick="addReminder()">
+
+📢 POST REMINDER
+
+</button>
+
+<button
+class="clear-btn"
+onclick="clearReminders()">
+
+🗑️ CLEAR ALL
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- BRING -->
+
+<section id="bring" class="page">
+
+<div class="welcome">
+
+<h1>
+🎒 Things to Bring
+</h1>
+
+<p>
+Prepare everything before school.
+</p>
+
+</div>
+
+<div class="card">
+
+<div class="bring-item">
+<label>
+<input type="checkbox">
+📓 Notebooks
+</label>
+</div>
+
+<div class="bring-item">
+<label>
+<input type="checkbox">
+📚 Textbooks
+</label>
+</div>
+
+<div class="bring-item">
+<label>
+<input type="checkbox">
+✏️ Pens, Pencil & Eraser
+</label>
+</div>
+
+<div class="bring-item">
+<label>
+<input type="checkbox">
+🧪 Science Materials
+</label>
+</div>
+
+<div class="bring-item">
+<label>
+<input type="checkbox">
+💧 Water Bottle
+</label>
+</div>
+
+</div>
+
+</section>
+
+
+<!-- BRAVERY CUTIES -->
+
+<section id="cuties" class="page">
+
+<div class="welcome">
+
+<h1>
+💌 BraveryCuties Corner
+</h1>
+
+<p>
+Leave a little note for Bravery. ✨
+</p>
+
+</div>
+
+
+<div class="card">
+
+<div class="cutie-intro">
+
+<div class="cutie-icon">
+💌
+</div>
+
+<div>
+
+<h2>
+Little Notes from BraveryCuties
+</h2>
+
+<p class="muted">
+Have something small to say?
+Leave a message for the class!
+</p>
+
+</div>
+
+</div>
+
+
+<div class="note-box">
+
+<textarea
+id="cutieNote"
+maxlength="180"
+placeholder="Write a small note... 💭">
+</textarea>
+
+<div class="note-bottom">
+
+<span id="charCount">
+0 / 180
+</span>
+
+<button
+class="post-note"
+onclick="addCutieNote()">
+
+💌 Post Note
+
+</button>
+
+</div>
+
+</div>
+
+
+<div class="quick-notes">
+
+<span>
+Quick note:
+</span>
+
+<button onclick="quickNote('Good luck, Bravery! 💜')">
+Good luck! 💜
+</button>
+
+<button onclick="quickNote('You got this! ✨')">
+You got this! ✨
+</button>
+
+<button onclick="quickNote('Don’t forget your requirements! 📚')">
+Reminder! 📚
+</button>
+
+<button onclick="quickNote('Happy weekend, Bravery! 🌸')">
+Happy weekend! 🌸
+</button>
+
+</div>
+
+</div>
+
+
+<div class="notes-wall">
+
+<div class="notes-title">
+
+<h2>
+📝 Bravery Notes
+</h2>
+
+<button
+onclick="clearCutieNotes()"
+class="clear-notes">
+
+🗑️ Clear Notes
+
+</button>
+
+</div>
+
+<div
+id="cutieNotesList"
+class="cutie-notes-grid">
+
+</div>
+
+</div>
+
+</section>
+
 
 <footer>
-  Bravery Student Hub • built with ♥
+💜 BRAVERY, LET'S MAKE TODAY COUNT! 💪
 </footer>
 
+
 <script>
-// simple page switching
-function showPage(id,btn){document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active')}
-// time
-function updateClock(){const d=new Date();const t=d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});document.getElementById('time').textContent=t;document.getElementById('date').textContent=d.toLocaleDateString()}
-setInterval(updateClock,1000);updateClock();
-// tasks
-function addTask(){const v=document.getElementById('newTask').value.trim();if(!v) return;const container=document.getElementById('tasks').querySelector('.card');const div=document.createElement('div');div.className='task';div.innerHTML='<input class="task-check" type="checkbox"><div class=\"task-text\">'+v+'</div>';container.insertBefore(div,container.querySelector('.add-task-box'));document.getElementById('newTask').value=''}
+
+/* =====================================================
+   FIREBASE
+   DO NOT CHANGE THIS PART
+===================================================== */
+
+const firebaseConfig = {
+
+    apiKey:
+    "AIzaSyBwUwif7I34Z--Jh82aGqHyIbBIMCYytJM",
+
+    authDomain:
+    "bravery-student-hub.firebaseapp.com",
+
+    databaseURL:
+    "https://bravery-student-hub-default-rtdb.firebaseio.com",
+
+    projectId:
+    "bravery-student-hub",
+
+    storageBucket:
+    "bravery-student-hub.firebasestorage.app",
+
+    messagingSenderId:
+    "752875168772",
+
+    appId:
+    "1:752875168772:web:bb47711df6c67c0cf58151",
+
+    measurementId:
+    "G-Z6L9Y3C789"
+
+};
+
+let database = null;
+
+try {
+
+    firebase.initializeApp(firebaseConfig);
+
+    database = firebase.database();
+
+    document.getElementById("firebaseStatus").textContent =
+    "🟢 Firebase connected — shared notes are ON!";
+
+    document.getElementById("firebaseStatus").className =
+    "firebase-status firebase-ok";
+
+} catch(error) {
+
+    console.error(error);
+
+    document.getElementById("firebaseStatus").textContent =
+    "🔴 Firebase connection failed.";
+
+    document.getElementById("firebaseStatus").className =
+    "firebase-status firebase-error";
+
+}
+
+
+/* =====================================================
+   PAGE SWITCHING
+===================================================== */
+
+function showPage(pageId,button){
+
+    document.querySelectorAll(".page").forEach(page => {
+
+        page.classList.remove("active");
+
+    });
+
+    document.getElementById(pageId).classList.add("active");
+
+    document.querySelectorAll("nav button").forEach(btn => {
+
+        btn.classList.remove("active");
+
+    });
+
+    if(button){
+
+        button.classList.add("active");
+
+    }
+
+}
+
+
+/* =====================================================
+   CLOCK
+===================================================== */
+
+function updateClock(){
+
+    const now = new Date();
+
+    let hours = now.getHours();
+
+    const minutes = now.getMinutes();
+
+    const seconds = now.getSeconds();
+
+    const ampm = hours >= 12 ? "PM" : "AM";
+
+    let displayHour = hours % 12;
+
+    if(displayHour === 0){
+
+        displayHour = 12;
+
+    }
+
+    document.getElementById("time").textContent =
+
+        String(displayHour).padStart(2,"0")
+        + ":"
+        + String(minutes).padStart(2,"0")
+        + ":"
+        + String(seconds).padStart(2,"0")
+        + " "
+        + ampm;
+
+    document.getElementById("date").textContent =
+
+        now.toLocaleDateString(
+            "en-PH",
+            {
+                weekday:"long",
+                month:"long",
+                day:"numeric",
+                year:"numeric"
+            }
+        );
+
+    updateSchedule(hours,minutes);
+
+}
+
+setInterval(updateClock,1000);
+
+updateClock();
+
+
+/* =====================================================
+   SCHEDULE
+===================================================== */
+
+function convertTime(time){
+
+    const parts = time.split(":");
+
+    return (
+        parseInt(parts[0]) * 60
+        +
+        parseInt(parts[1])
+    );
+
+}
+
+
+function updateSchedule(hours,minutes){
+
+    const currentMinutes =
+        hours * 60 + minutes;
+
+    const rows =
+        document.querySelectorAll(
+            "#scheduleBody tr"
+        );
+
+    let nextClass = null;
+
+    rows.forEach(row => {
+
+        row.classList.remove("current");
+
+        const start =
+            convertTime(row.dataset.start);
+
+        const end =
+            convertTime(row.dataset.end);
+
+        if(
+            currentMinutes >= start &&
+            currentMinutes < end
+        ){
+
+            row.classList.add("current");
+
+        }
+
+        if(
+            !nextClass &&
+            start > currentMinutes &&
+            !row.classList.contains("break")
+        ){
+
+            nextClass = row;
+
+        }
+
+    });
+
+    if(nextClass){
+
+        const cells =
+            nextClass.querySelectorAll("td");
+
+        document.getElementById(
+            "nextSubject"
+        ).textContent =
+            cells[1].textContent;
+
+        document.getElementById(
+            "nextTeacher"
+        ).textContent =
+            "👨‍🏫 " + cells[2].textContent;
+
+        document.getElementById(
+            "nextRoom"
+        ).textContent =
+            "📍 Room " + cells[3].textContent;
+
+        const difference =
+            convertTime(nextClass.dataset.start)
+            -
+            currentMinutes;
+
+        const hoursLeft =
+            Math.floor(difference / 60);
+
+        const minutesLeft =
+            difference % 60;
+
+        document.getElementById(
+            "countdown"
+        ).textContent =
+            hoursLeft > 0
+            ?
+            "Starts in "
+            + hoursLeft
+            + "h "
+            + minutesLeft
+            + "m"
+            :
+            "Starts in "
+            + minutesLeft
+            + " minutes";
+
+    }else{
+
+        document.getElementById(
+            "nextSubject"
+        ).textContent =
+            "No more classes today 🎉";
+
+        document.getElementById(
+            "nextTeacher"
+        ).textContent = "";
+
+        document.getElementById(
+            "nextRoom"
+        ).textContent = "";
+
+        document.getElementById(
+            "countdown"
+        ).textContent =
+            "Time to rest!";
+
+    }
+
+}
+
+
+/* =====================================================
+   TODO LIST
+===================================================== */
+
+let tasks =
+JSON.parse(
+    localStorage.getItem("braveryTasks")
+) || [
+
+    {
+        id:1,
+        text:"Finish MAPEH Music activity",
+        completed:false
+    },
+
+    {
+        id:2,
+        text:"Review Science topics",
+        completed:false
+    },
+
+    {
+        id:3,
+        text:"Prepare Filipino requirements",
+        completed:false
+    },
+
+    {
+        id:4,
+        text:"Prepare TLE materials",
+        completed:false
+    },
+
+    {
+        id:5,
+        text:"Study for upcoming quizzes",
+        completed:false
+    }
+
+];
+
+
+function saveTasks(){
+
+    localStorage.setItem(
+        "braveryTasks",
+        JSON.stringify(tasks)
+    );
+
+}
+
+
+function displayTasks(){
+
+    const container =
+        document.getElementById("taskList");
+
+    container.innerHTML = "";
+
+    tasks.forEach(task => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "task"
+            +
+            (
+                task.completed
+                ?
+                " completed"
+                :
+                ""
+            );
+
+        div.innerHTML = `
+
+            <input
+            type="checkbox"
+            class="task-check"
+            ${task.completed ? "checked" : ""}
+            onchange="toggleTask(${task.id})">
+
+            <span class="task-text">
+                ${escapeHTML(task.text)}
+            </span>
+
+            <div class="task-actions">
+
+                <button
+                class="edit-task"
+                onclick="editTask(${task.id})">
+                    ✏️
+                </button>
+
+                <button
+                class="delete-task"
+                onclick="deleteTask(${task.id})">
+                    🗑️
+                </button>
+
+            </div>
+        `;
+
+        container.appendChild(div);
+
+    });
+
+    updateProgress();
+
+}
+
+
+function addTask(){
+
+    const input =
+        document.getElementById("taskInput");
+
+    const text =
+        input.value.trim();
+
+    if(!text){
+
+        alert("Please type a task first! 📝");
+
+        return;
+
+    }
+
+    tasks.push({
+
+        id:Date.now(),
+
+        text:text,
+
+        completed:false
+
+    });
+
+    saveTasks();
+
+    displayTasks();
+
+    input.value = "";
+
+}
+
+
+function handleTaskEnter(event){
+
+    if(event.key === "Enter"){
+
+        addTask();
+
+    }
+
+}
+
+
+function toggleTask(id){
+
+    const task =
+        tasks.find(
+            task => task.id === id
+        );
+
+    if(!task) return;
+
+    task.completed =
+        !task.completed;
+
+    saveTasks();
+
+    displayTasks();
+
+}
+
+
+function editTask(id){
+
+    const task =
+        tasks.find(
+            task => task.id === id
+        );
+
+    if(!task) return;
+
+    const text =
+        prompt(
+            "Edit this task:",
+            task.text
+        );
+
+    if(
+        text !== null &&
+        text.trim() !== ""
+    ){
+
+        task.text =
+            text.trim();
+
+        saveTasks();
+
+        displayTasks();
+
+    }
+
+}
+
+
+function deleteTask(id){
+
+    if(!confirm("Delete this task?")){
+
+        return;
+
+    }
+
+    tasks =
+        tasks.filter(
+            task => task.id !== id
+        );
+
+    saveTasks();
+
+    displayTasks();
+
+}
+
+
+function clearCompleted(){
+
+    tasks =
+        tasks.filter(
+            task => !task.completed
+        );
+
+    saveTasks();
+
+    displayTasks();
+
+}
+
+
+function clearAllTasks(){
+
+    if(!confirm("Delete ALL tasks?")){
+
+        return;
+
+    }
+
+    tasks = [];
+
+    saveTasks();
+
+    displayTasks();
+
+}
+
+
+function quickAdd(text){
+
+    tasks.push({
+
+        id:Date.now(),
+
+        text:text,
+
+        completed:false
+
+    });
+
+    saveTasks();
+
+    displayTasks();
+
+}
+
+
+function updateProgress(){
+
+    const total =
+        tasks.length;
+
+    const completed =
+        tasks.filter(
+            task => task.completed
+        ).length;
+
+    document.getElementById(
+        "progressText"
+    ).textContent =
+        completed
+        + " / "
+        + total
+        + " completed";
+
+    document.getElementById(
+        "progressFill"
+    ).style.width =
+        total
+        ?
+        (completed / total * 100) + "%"
+        :
+        "0%";
+
+}
+
+
+/* =====================================================
+   FIREBASE — P.I.O. REMINDERS
+===================================================== */
+
+let reminders = [];
+
+
+/*
+   THIS LISTENS TO FIREBASE.
+
+   If someone posts a reminder,
+   EVERYONE'S webpage receives it.
+*/
+
+if(database){
+
+    database
+    .ref("reminders")
+    .on("value",snapshot => {
+
+        reminders = [];
+
+        snapshot.forEach(child => {
+
+            reminders.push({
+
+                id:child.key,
+
+                ...child.val()
+
+            });
+
+        });
+
+        reminders.sort(
+            (a,b) =>
+            (a.time || 0)
+            -
+            (b.time || 0)
+        );
+
+        displayReminders();
+
+    });
+
+}
+
+
+function displayReminders(){
+
+    const container =
+        document.getElementById(
+            "reminderList"
+        );
+
+    container.innerHTML = "";
+
+    if(!reminders.length){
+
+        container.innerHTML = `
+
+            <div class="reminder info">
+
+                <strong>
+                    📢 No reminders yet
+                </strong>
+
+                <p>
+                    The P.I.O. can post a reminder below.
+                </p>
+
+            </div>
+
+        `;
+
+        updateHomeReminder();
+
+        return;
+
+    }
+
+    reminders
+    .slice()
+    .reverse()
+    .forEach(reminder => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "reminder "
+            +
+            (
+                reminder.type ||
+                "info"
+            );
+
+        div.innerHTML = `
+
+            <strong>
+                ${escapeHTML(reminder.title)}
+            </strong>
+
+            <p>
+                ${escapeHTML(reminder.message)}
+            </p>
+
+        `;
+
+        container.appendChild(div);
+
+    });
+
+    updateHomeReminder();
+
+}
+
+
+function addReminder(){
+
+    if(!database){
+
+        alert(
+            "Firebase is not connected."
+        );
+
+        return;
+
+    }
+
+    const type =
+        document.getElementById(
+            "reminderType"
+        ).value;
+
+    const title =
+        document.getElementById(
+            "reminderTitle"
+        ).value.trim();
+
+    const message =
+        document.getElementById(
+            "reminderMessage"
+        ).value.trim();
+
+    if(!title || !message){
+
+        alert(
+            "Please enter a title and reminder!"
+        );
+
+        return;
+
+    }
+
+    database
+    .ref("reminders")
+    .push({
+
+        type:type,
+
+        title:title,
+
+        message:message,
+
+        time:Date.now()
+
+    })
+    .then(() => {
+
+        document.getElementById(
+            "reminderTitle"
+        ).value = "";
+
+        document.getElementById(
+            "reminderMessage"
+        ).value = "";
+
+        alert(
+            "Reminder posted! 📢💜"
+        );
+
+    })
+    .catch(error => {
+
+        alert(
+            "Firebase error: "
+            + error.message
+        );
+
+    });
+
+}
+
+
+function clearReminders(){
+
+    if(!database) return;
+
+    if(!confirm(
+        "Clear ALL P.I.O. reminders for everyone?"
+    )){
+
+        return;
+
+    }
+
+    database
+    .ref("reminders")
+    .remove();
+
+}
+
+
+function updateHomeReminder(){
+
+    const box =
+        document.getElementById(
+            "homeReminder"
+        );
+
+    if(!reminders.length){
+
+        box.innerHTML =
+        "<p class='muted'>No reminders posted yet.</p>";
+
+        return;
+
+    }
+
+    const latest =
+        reminders[
+            reminders.length - 1
+        ];
+
+    box.innerHTML = `
+
+        <div class="reminder ${latest.type}">
+
+            <strong>
+                ${escapeHTML(latest.title)}
+            </strong>
+
+            <p>
+                ${escapeHTML(latest.message)}
+            </p>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   FIREBASE — BRAVERYCUTIES NOTES
+===================================================== */
+
+let cutieNotes = [];
+
+
+/*
+   THIS IS THE IMPORTANT PART.
+
+   .on("value") means the webpage
+   continuously listens to Firebase.
+
+   So if JHEMMY posts a note,
+   YOU can see it too.
+*/
+
+if(database){
+
+    database
+    .ref("cutieNotes")
+    .on("value",snapshot => {
+
+        cutieNotes = [];
+
+        snapshot.forEach(child => {
+
+            cutieNotes.push({
+
+                id:child.key,
+
+                ...child.val()
+
+            });
+
+        });
+
+        cutieNotes.sort(
+            (a,b) =>
+            (a.createdAt || 0)
+            -
+            (b.createdAt || 0)
+        );
+
+        displayCutieNotes();
+
+    });
+
+}
+
+
+function displayCutieNotes(){
+
+    const container =
+        document.getElementById(
+            "cutieNotesList"
+        );
+
+    container.innerHTML = "";
+
+    if(!cutieNotes.length){
+
+        container.innerHTML = `
+
+            <div
+            style="
+            grid-column:1/-1;
+            text-align:center;
+            padding:35px;
+            color:#9287a9;
+            ">
+
+                <div style="font-size:42px">
+                    💌
+                </div>
+
+                <strong>
+                    No notes yet!
+                </strong>
+
+                <p>
+                    Be the first BraveryCutie
+                    to leave a note. ✨
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+    const colors = [
+
+        "#fff1a8",
+        "#ffddeb",
+        "#dff5ff",
+        "#e8ddff",
+        "#dcf7df"
+
+    ];
+
+    const rotations = [
+
+        "-1deg",
+        "1.5deg",
+        "-2deg",
+        "2deg",
+        "0deg"
+
+    ];
+
+    cutieNotes
+    .slice()
+    .reverse()
+    .forEach((note,index) => {
+
+        const div =
+            document.createElement("div");
+
+        div.className =
+            "cutie-note";
+
+        div.style.background =
+            colors[
+                index % colors.length
+            ];
+
+        div.style.setProperty(
+            "--rotation",
+            rotations[
+                index % rotations.length
+            ]
+        );
+
+        div.innerHTML = `
+
+            <p>
+                ${escapeHTML(note.text)}
+            </p>
+
+            <div class="note-time">
+
+                ${escapeHTML(
+                    note.time || ""
+                )}
+
+            </div>
+
+            <button
+            class="note-delete"
+            onclick="deleteCutieNote('${note.id}')">
+
+                🗑️
+
+            </button>
+
+        `;
+
+        container.appendChild(div);
+
+    });
+
+}
+
+
+function addCutieNote(){
+
+    if(!database){
+
+        alert(
+            "Firebase is not connected."
+        );
+
+        return;
+
+    }
+
+    const input =
+        document.getElementById(
+            "cutieNote"
+        );
+
+    const text =
+        input.value.trim();
+
+    if(!text){
+
+        alert(
+            "Write a little note first! 💌"
+        );
+
+        return;
+
+    }
+
+    database
+    .ref("cutieNotes")
+    .push({
+
+        text:text,
+
+        time:
+        new Date().toLocaleString(
+            "en-PH",
+            {
+                month:"short",
+                day:"numeric",
+                hour:"numeric",
+                minute:"2-digit"
+            }
+        ),
+
+        createdAt:Date.now()
+
+    })
+    .then(() => {
+
+        input.value = "";
+
+        updateCharacterCount();
+
+    })
+    .catch(error => {
+
+        alert(
+            "Firebase error: "
+            + error.message
+        );
+
+    });
+
+}
+
+
+function quickNote(text){
+
+    const input =
+        document.getElementById(
+            "cutieNote"
+        );
+
+    input.value = text;
+
+    updateCharacterCount();
+
+    input.focus();
+
+}
+
+
+function deleteCutieNote(id){
+
+    if(!database) return;
+
+    if(!confirm(
+        "Delete this note?"
+    )){
+
+        return;
+
+    }
+
+    database
+    .ref("cutieNotes/" + id)
+    .remove();
+
+}
+
+
+function clearCutieNotes(){
+
+    if(!database) return;
+
+    if(!cutieNotes.length){
+
+        alert(
+            "There are no notes to clear!"
+        );
+
+        return;
+
+    }
+
+    if(!confirm(
+        "Clear ALL BraveryCuties notes for everyone?"
+    )){
+
+        return;
+
+    }
+
+    database
+    .ref("cutieNotes")
+    .remove();
+
+}
+
+
+/* =====================================================
+   CHARACTER COUNTER
+===================================================== */
+
+function updateCharacterCount(){
+
+    const input =
+        document.getElementById(
+            "cutieNote"
+        );
+
+    const counter =
+        document.getElementById(
+            "charCount"
+        );
+
+    if(input && counter){
+
+        counter.textContent =
+            input.value.length
+            +
+            " / 180";
+
+    }
+
+}
+
+
+document
+.getElementById("cutieNote")
+.addEventListener(
+    "input",
+    updateCharacterCount
+);
+
+
+/* =====================================================
+   SECURITY
+===================================================== */
+
+function escapeHTML(text){
+
+    return String(text)
+
+        .replace(/&/g,"&amp;")
+
+        .replace(/</g,"&lt;")
+
+        .replace(/>/g,"&gt;")
+
+        .replace(/"/g,"&quot;")
+
+        .replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+   START TODO
+===================================================== */
+
+displayTasks();
+
 </script>
 
 </body>
