@@ -1,55 +1,167 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Bravery Student Hub — Photo Wall Fix</title>
-  <style>
-    :root{--accent:#7651d6}
-    *{box-sizing:border-box}
-    body{font-family:Trebuchet MS, Arial, sans-serif;margin:0;min-height:100vh;background:linear-gradient(135deg,#fff5fc,#eef5ff);color:#302565;display:flex;flex-direction:column;align-items:center}
-    header{width:100%;padding:24px 20px;text-align:center;background:rgba(255,255,255,.7);box-shadow:0 6px 18px rgba(80,60,120,.06);}
-    h1{margin:0;font-size:26px}
-    .photo-intro{max-width:980px;padding:18px;text-align:center}
-    .photo-gallery{width:100%;max-width:980px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px;padding:18px}
-    .photo-card{background:white;border-radius:14px;overflow:hidden;box-shadow:0 8px 20px rgba(80,60,130,.08);display:flex;flex-direction:column;align-items:stretch}
-    .photo-card img{width:100%;height:230px;object-fit:cover;display:block}
-    .photo-caption{padding:10px;text-align:center;color:#5b4a87;font-weight:700}
-    footer{margin-top:28px;padding:24px;color:#80759b}
-    @media (max-width:600px){.photo-card img{height:180px}}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bravery Student Hub</title>
+<style>
+/* --- full original CSS preserved (trimmed/reordered slightly) --- */
+*{box-sizing:border-box;margin:0;padding:0;font-family:"Trebuchet MS", Arial, sans-serif}
+body{min-height:100vh;color:#252052;overflow-x:hidden;background:radial-gradient(circle at 10% 10%, #cbb7ff 0%, transparent 28%),radial-gradient(circle at 90% 20%, #ffd2e5 0%, transparent 30%),radial-gradient(circle at 50% 100%, #b9e8ff 0%, transparent 35%),linear-gradient(135deg,#fff5fc,#eef5ff,#fff8e9);position:relative}
+.decor{position:fixed;pointer-events:none;z-index:-1;animation:float 7s ease-in-out infinite}
+.star1{top:12%;left:4%;font-size:30px}
+.star2{top:40%;right:5%;font-size:25px;animation-delay:2s}
+.star3{bottom:10%;left:8%;font-size:24px;animation-delay:4s}
+.cloud1{top:4%;right:20%;font-size:55px;opacity:.5}
+.cloud2{bottom:4%;right:10%;font-size:50px;opacity:.4;animation-delay:3s}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+header{max-width:1250px;margin:25px auto 15px;padding:22px 28px;display:flex;justify-content:space-between;align-items:center;border-radius:28px;background:rgba(255,255,255,.75);backdrop-filter:blur(18px);box-shadow:0 15px 40px rgba(89,65,160,.15);border:2px solid rgba(255,255,255,.8)}
+.logo{font-size:29px;font-weight:900;color:#302568}
+.logo span{color:#7652d6}
+.bravecuties{font-size:12px;font-weight:bold;letter-spacing:2px;color:#b45be4;margin-top:4px;margin-left:42px;text-shadow:0 2px 8px rgba(180,91,228,.2)}
+.tagline{color:#8b78b8;font-size:13px;margin-top:5px}
+.clock{text-align:right}#time{font-size:25px;font-weight:bold;color:#4e389e}#date{font-size:13px;color:#81759d;margin-top:3px}
+nav{max-width:1250px;margin:15px auto;display:flex;gap:10px;flex-wrap:wrap}
+nav button{border:none;padding:12px 18px;border-radius:15px;background:rgba(255,255,255,.8);color:#393064;font-weight:bold;cursor:pointer;transition:.25s;box-shadow:0 5px 15px rgba(90,60,150,.08)}
+nav button:hover{transform:translateY(-3px);background:#8b5de8;color:white}
+nav button.active{background:linear-gradient(135deg,#7651d6,#b05ee8);color:white;box-shadow:0 8px 20px rgba(118,81,214,.3)}
+.page{display:none;max-width:1250px;margin:20px auto 50px}
+.page.active{display:block}
+.welcome{margin:30px 5px}
+.welcome h1{font-size:42px;color:#302565}
+.welcome p{margin-top:7px;color:#81759d}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+.card{background:rgba(255,255,255,.82);backdrop-filter:blur(15px);border-radius:25px;padding:23px;border:2px solid rgba(255,255,255,.9);box-shadow:0 12px 30px rgba(90,60,150,.10);transition:.25s}
+.card:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(90,60,150,.15)}
+.card h2{margin-bottom:15px;color:#3c2b76}
+/* photo gallery */
+.photo-intro{text-align:center;margin-bottom:25px}
+.photo-intro h2{color:#51359a;margin-bottom:8px}
+.photo-intro p{color:#81759d}
+.photo-gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.photo-card{background:white;padding:12px;border-radius:22px;box-shadow:0 10px 25px rgba(80,60,130,.12);transition:.25s}
+.photo-card:hover{transform:translateY(-5px) rotate(1deg);box-shadow:0 16px 35px rgba(80,60,130,.18)}
+.photo-card img{width:100%;height:250px;object-fit:cover;border-radius:16px;display:block}
+.photo-caption{text-align:center;padding:12px 5px 5px;color:#5b4a87;font-weight:bold}
+footer{text-align:center;padding:25px;color:#80759b;font-size:13px}
+@media(max-width:800px){body{padding:10px}header{flex-direction:column;gap:15px;text-align:center}.clock{text-align:center}.grid{grid-template-columns:1fr}.welcome h1{font-size:32px}.form-row{grid-template-columns:1fr}.schedule{font-size:12px}.schedule th,.schedule td{padding:9px 5px}.add-task-box{flex-direction:column}.cutie-intro{align-items:flex-start}.note-bottom{flex-direction:column;align-items:stretch}.post-note{width:100%}.bravecuties{margin-left:0;letter-spacing:1.5px}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>Bravery Student Hub</h1>
-    <div style="color:#81759d;margin-top:6px;font-size:14px">Photo wall fix — images loaded from repository root</div>
-  </header>
 
-  <section class="photo-intro">
-    <h2 style="margin:0 0 6px 0;color:#51359a">Photo Wall</h2>
-    <p style="margin:0;color:#81759d">Moments from class — if these images don't load, check filenames are exactly classphoto.jpg, classphoto2.jpg, classphoto3.jpg (case-sensitive)</p>
-  </section>
+<div class="decor star1">✦</div>
+<div class="decor star2">✦</div>
+<div class="decor star3">✦</div>
 
-  <div class="photo-gallery" id="photoGallery">
+<header>
+  <div style="display:flex;align-items:center">
+    <div class="logo">BRAVERY <span>Hub</span></div>
+    <div class="bravecuties">BRAVERY STUDENTS</div>
+  </div>
+  <div class="clock">
+    <div id="time">--:--</div>
+    <div id="date">Loading date...</div>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="showPage('home',this)">Home</button>
+  <button onclick="showPage('schedule',this)">Schedule</button>
+  <button onclick="showPage('tasks',this)">Tasks</button>
+  <button onclick="showPage('photos',this)">Photos</button>
+</nav>
+
+<!-- HOME -->
+<section id="home" class="page active">
+  <div class="welcome">
+    <h1>Welcome to Bravery Student Hub</h1>
+    <p>Your class schedule, tasks and memories in one place.</p>
+  </div>
+  <div class="grid">
+    <div class="card next">
+      <h2>Next Class</h2>
+      <div class="nextSubject">Math — Algebra</div>
+      <div class="muted">Room 12 • Teacher: Ms. D</div>
+    </div>
+    <div class="card">
+      <h2>Quick Links</h2>
+      <p class="muted">View schedule, add tasks, and share photos.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule" class="page">
+  <div class="card">
+    <h2>Class Schedule</h2>
+    <table class="schedule">
+      <thead><tr><th>Time</th><th>Subject</th><th>Room</th></tr></thead>
+      <tbody>
+        <tr class="current"><td>09:00 - 10:00</td><td>Math</td><td>12</td></tr>
+        <tr><td>10:15 - 11:00</td><td>Science</td><td>30</td></tr>
+        <tr><td>11:15 - 12:00</td><td>English</td><td>41</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- TASKS -->
+<section id="tasks" class="page">
+  <div class="card">
+    <h2>To-do List</h2>
+    <div class="todo-header">
+      <div class="progress-text">3 tasks — 1 done</div>
+    </div>
+    <div class="task">
+      <input class="task-check" type="checkbox">
+      <div class="task-text">Finish math worksheet</div>
+    </div>
+    <div class="task">
+      <input class="task-check" type="checkbox">
+      <div class="task-text">Prepare science project</div>
+    </div>
+    <div class="add-task-box">
+      <input id="newTask" placeholder="Add a new task...">
+      <button class="add-task-btn" onclick="addTask()">Add</button>
+    </div>
+  </div>
+</section>
+
+<!-- PHOTOS (PHOTO WALL) -->
+<section id="photos" class="page">
+  <div class="photo-intro">
+    <h2>Photo Wall</h2>
+    <p>Moments from class and events — share yours!</p>
+  </div>
+  <div class="photo-gallery">
     <div class="photo-card">
       <img src="classphoto.jpg" alt="Class Photo 1" loading="lazy">
       <div class="photo-caption">Class Photo 1</div>
     </div>
-
     <div class="photo-card">
       <img src="classphoto2.jpg" alt="Class Photo 2" loading="lazy">
       <div class="photo-caption">Class Photo 2</div>
     </div>
-
     <div class="photo-card">
       <img src="classphoto3.jpg" alt="Class Photo 3" loading="lazy">
       <div class="photo-caption">Class Photo 3</div>
     </div>
   </div>
+</section>
 
-  <footer>
-    Bravery Student Hub — Images served from repository root
-  </footer>
+<footer>
+  Bravery Student Hub • built with ♥
+</footer>
+
+<script>
+// simple page switching
+function showPage(id,btn){document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active')}
+// time
+function updateClock(){const d=new Date();const t=d.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});document.getElementById('time').textContent=t;document.getElementById('date').textContent=d.toLocaleDateString()}
+setInterval(updateClock,1000);updateClock();
+// tasks
+function addTask(){const v=document.getElementById('newTask').value.trim();if(!v) return;const container=document.getElementById('tasks').querySelector('.card');const div=document.createElement('div');div.className='task';div.innerHTML='<input class="task-check" type="checkbox"><div class=\"task-text\">'+v+'</div>';container.insertBefore(div,container.querySelector('.add-task-box'));document.getElementById('newTask').value=''}
+</script>
 
 </body>
 </html>
